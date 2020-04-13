@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Allow central CICD environment to manage cloudformation stacks and updates IAM's in every environment that will host code
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterLabels:
+      CICDAccountID:
+        default: Account ID for CICD environment
+      CICDRoleName:
+        default: CICD role name
+Parameters:
+  CICDAccountID:
+    Description: !Sub The 12 digit AWS account ID of the CICD account. Go to https://console.aws.amazon.com/organizations/home?region=${AWS::Region}#/accounts.
+    Type: String
+    AllowedPattern: (\d{12}|^$)
+    ConstraintDescription: must be an AWS account ID
+  CICDRoleName:
+    Description: Unique name of the role that will contain the policy with the permissions for CF and IAM.
+    Default: CICDAccountRole
+    Type: String
+Resources:
+  CICDAccountRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref CICDRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Ref CICDAccountID
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: CfnStackAssumeRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - cloudformation:CreateStack
+            - cloudformation:DeleteStack
+            - cloudformation:DescribeStacks
+            - cloudformation:DeleteStack
+            Resource: "*"
+          - Effect: Allow
+            Action:
+            - iam:CreateRole
+            - iam:DeleteRole
+            - iam:GetRole
+            - iam:DetachRolePolicy
+            - iam:AttachRolePolicy
+            - iam:PutRolePolicy
+            - iam:DeleteRolePolicy
+            Resource:
+            - !Sub arn:aws:iam::${AWS::AccountId}:role/AppLambdaRole-*
+            - !Sub arn:aws:iam::${AWS::AccountId}:role/CodePipelineDeploymentRole-*
+            - !Sub arn:aws:iam::${AWS::AccountId}:role/CodePipelineServiceRole-*
+Outputs:
+  RemoteAccountRole:
+    Value: !GetAtt CICDAccountRole.Arn
+  RemoteAccountRoleName:
+    Value: !Ref CICDRoleName
