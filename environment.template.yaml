@@ -10,7 +10,7 @@ Metadata:
         default: CICD role name
 Parameters:
   CICDAccountID:
-    Description: !Sub The 12 digit AWS account ID of the CICD account. Go to https://console.aws.amazon.com/organizations/home?region=${AWS::Region}#/accounts.
+    Description: 'The 12 digit AWS account ID of the CICD account. Go to https://console.aws.amazon.com/organizations/home?region=eu-west-1#/accounts.'
     Type: String
     AllowedPattern: (\d{12}|^$)
     ConstraintDescription: must be an AWS account ID
@@ -40,18 +40,18 @@ Resources:
             Action:
             - cloudformation:CreateStack
             - cloudformation:DeleteStack
-            - cloudformation:DescribeStacks
             - cloudformation:DeleteStack
+            - cloudformation:DescribeStacks
             Resource: "*"
           - Effect: Allow
             Action:
+            - iam:AttachRolePolicy
             - iam:CreateRole
             - iam:DeleteRole
-            - iam:GetRole
-            - iam:DetachRolePolicy
-            - iam:AttachRolePolicy
-            - iam:PutRolePolicy
             - iam:DeleteRolePolicy
+            - iam:DetachRolePolicy
+            - iam:GetRole
+            - iam:PutRolePolicy
             Resource:
             - !Sub arn:aws:iam::${AWS::AccountId}:role/AppLambdaRole-*
             - !Sub arn:aws:iam::${AWS::AccountId}:role/CodePipelineDeploymentRole-*

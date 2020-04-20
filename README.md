@@ -12,6 +12,7 @@ End goals;
     3. `Backend` -> This will house all of our endpoints will change frequently as endpoints are built out and changed
     4. `Web` -> May end up naming this more accurately tom somehthing like `React-Web`, `Vue-Web`, etc as we may want to seemlessly evolve the frontend.
 - Ability to add in more processes later on such as testing and proper code reviews/approvals
+- Have a bug branch and a feature branch. Maybe the feature branch can be pushed to an additional environment such as `Beta`.
 
 The templates in this repo are based on the ones provided in this repo [Quickstart Trek10](https://github.com/aws-quickstart/quickstart-trek10-serverless-enterprise-cicd).
 
